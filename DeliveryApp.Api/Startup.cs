@@ -1,5 +1,8 @@
 namespace DeliveryApp.Api;
 
+// Этот шаблон безнадежно устарел, он затрудняет настройку приложения.
+// https://learn.microsoft.com/en-us/aspnet/core/migration/50-to-60?view=aspnetcore-8.0&tabs=visual-studio
+// дотнет здесь восьмой, а шаблон из пятого. Исправьте уже, а то уж очень несовременно.
 public class Startup
 {
     public Startup()
