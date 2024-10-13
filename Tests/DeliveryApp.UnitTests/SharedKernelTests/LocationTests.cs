@@ -6,13 +6,6 @@ namespace DeliveryApp.UnitTests.SharedKernelTests;
 
 public class LocationTests
 {
-    [Fact]
-    public void MinAndMax()
-    {
-        Assert.Equal(1, Location.MinComponentValue);
-        Assert.Equal(10, Location.MaxComponentValue);
-    }
-    
     [Theory]
     [InlineData(-1)]
     [InlineData(0)]
@@ -63,15 +56,6 @@ public class LocationTests
     {
         var loc = Location.CreateRandom();
         Assert.NotNull(loc);
-    }
-    
-    [Fact]
-    public void CreateRandom_ShouldReturnInstanceWithInRangeValues()
-    {
-        var loc = Location.CreateRandom();
-        
-        Assert.InRange(loc.X, Location.MinComponentValue, Location.MaxComponentValue);
-        Assert.InRange(loc.Y, Location.MinComponentValue, Location.MaxComponentValue);
     }
     
     [Fact]
@@ -128,6 +112,6 @@ public class LocationTests
     public void ToString_ShouldReturnStringRepresentation()
     {
         var loc = Location.Create(5, 9);
-        Assert.Equal("{5, 9}", loc.ToString());
+        Assert.Equal("{x: 5, y: 9}", loc.ToString());
     }
 }

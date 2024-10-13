@@ -1,11 +1,13 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics;
+using CSharpFunctionalExtensions;
 
 namespace DeliveryApp.Core.Domain.SharedKernel;
 
+[DebuggerDisplay(value: "{GetType()} {ToString()}")]
 public sealed class Location : ValueObject
 {
-    public const int MinComponentValue = 1;
-    public const int MaxComponentValue = 10;
+    private const int MinCoordValue = 1;
+    private const int MaxCoordValue = 10;
 
     private static readonly Random _r = new();
     
@@ -22,12 +24,12 @@ public sealed class Location : ValueObject
 
     public static Location Create(int x, int y)
     {
-        if (x < MinComponentValue || x > MaxComponentValue)
+        if (x < MinCoordValue || x > MaxCoordValue)
         {
             ThrowRangeEx(nameof(x));
         }
         
-        if (y < MinComponentValue || y > MaxComponentValue)
+        if (y < MinCoordValue || y > MaxCoordValue)
         {
             ThrowRangeEx(nameof(y));
         }
@@ -37,8 +39,8 @@ public sealed class Location : ValueObject
 
     public static Location CreateRandom()
     {
-        var x = _r.Next(MinComponentValue, MaxComponentValue + 1);
-        var y = _r.Next(MinComponentValue, MaxComponentValue + 1);
+        var x = _r.Next(MinCoordValue, MaxCoordValue + 1);
+        var y = _r.Next(MinCoordValue, MaxCoordValue + 1);
         return new(x, y);
     }
 
@@ -61,8 +63,8 @@ public sealed class Location : ValueObject
 
     private static void ThrowRangeEx(string paramName)
     {
-        throw new ArgumentOutOfRangeException($"The '{paramName}' value must be between {MinComponentValue} and {MaxComponentValue} including boundaries", paramName);
+        throw new ArgumentOutOfRangeException($"The '{paramName}' value must be between {MinCoordValue} and {MaxCoordValue} including boundaries", paramName);
     }
 
-    public override string ToString() => $"{{{X}, {Y}}}";
+    public override string ToString() => $"{{x: {X}, y: {Y}}}";
 }
