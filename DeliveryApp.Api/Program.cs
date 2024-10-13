@@ -1,21 +1,41 @@
-namespace DeliveryApp.Api;
+using DeliveryApp.Api;
 
-public class Program
+var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddHealthChecks();
+builder.Services.AddCors(options =>
 {
-    public static void Main(string[] args)
-    {
-        var host = CreateHostBuilder(args).Build();
-        using (var scope = host.Services.CreateScope())
+    options.AddDefaultPolicy(
+        policy =>
         {
-        }
+            policy.AllowAnyOrigin();
+        });
+});
 
-        host.Run();
-    }
+// Configuration
+// services.Configure<Settings>(options => Configuration.Bind(options));
+// var connectionString = Configuration["CONNECTION_STRING"];
+// var geoServiceGrpcHost = Configuration["GEO_SERVICE_GRPC_HOST"];
+// var messageBrokerHost = Configuration["MESSAGE_BROKER_HOST"];
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(
-                webBuilder => webBuilder.UseStartup<Startup>());
-    }
+builder.Services.AddOptions<Settings>()
+    .BindConfiguration(string.Empty)
+    .ValidateDataAnnotations();
+
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseHsts();
+}
+
+app.UseHealthChecks("/health");
+app.UseRouting();
+
+app.Run();
