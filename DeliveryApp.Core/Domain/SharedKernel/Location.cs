@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using CSharpFunctionalExtensions;
+using Primitives;
 
 namespace DeliveryApp.Core.Domain.SharedKernel;
 
@@ -22,26 +23,30 @@ public sealed class Location : ValueObject
         Y = y;
     }
 
-    public static Location Create(int x, int y)
+    public static Result<Location, Error> Create(int x, int y)
     {
         if (x < MinCoordValue || x > MaxCoordValue)
         {
-            ThrowRangeEx(nameof(x));
+            return Errors.LocationCoordinateValueIsInvalid(MinCoordValue, MaxCoordValue);
         }
         
         if (y < MinCoordValue || y > MaxCoordValue)
         {
-            ThrowRangeEx(nameof(y));
+            return Errors.LocationCoordinateValueIsInvalid(MinCoordValue, MaxCoordValue);
         }
 
-        return new(x, y);
+        return new Location(x, y);
     }
 
-    public static Location CreateRandom()
+    /// <summary>
+    /// Returns a location with a random coordinates.
+    /// </summary>
+    /// <returns></returns>
+    public static Result<Location> CreateRandom()
     {
         var x = _r.Next(MinCoordValue, MaxCoordValue + 1);
         var y = _r.Next(MinCoordValue, MaxCoordValue + 1);
-        return new(x, y);
+        return new Location(x, y);
     }
 
     /// <summary>
@@ -49,9 +54,13 @@ public sealed class Location : ValueObject
     /// </summary>
     /// <param name="target">Target location.</param>
     /// <returns>Steps</returns>
-    public int DistanceTo(Location target)
+    public Result<int, Error> DistanceTo(Location target)
     {
-        ArgumentNullException.ThrowIfNull(target);
+        if (target is null)
+        {
+            return GeneralErrors.ValueIsRequired(nameof(target));
+        }
+        
         return Math.Abs(target.X - X) + Math.Abs(target.Y - Y);
     }
     
@@ -61,10 +70,13 @@ public sealed class Location : ValueObject
         yield return Y;
     }
 
-    private static void ThrowRangeEx(string paramName)
-    {
-        throw new ArgumentOutOfRangeException($"The '{paramName}' value must be between {MinCoordValue} and {MaxCoordValue} including boundaries", paramName);
-    }
-
     public override string ToString() => $"{{x: {X}, y: {Y}}}";
+}
+
+internal static class Errors
+{
+    public static Error LocationCoordinateValueIsInvalid(int from, int to)
+    {
+        return new Error($"{nameof(Location).ToLowerInvariant()}.coordinate.value.is.invalid", $"Coordinate value must be between {from} and {to} including boundaries");
+    }
 }

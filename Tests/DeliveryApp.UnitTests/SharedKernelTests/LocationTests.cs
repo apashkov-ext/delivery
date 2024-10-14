@@ -12,8 +12,10 @@ public class LocationTests
     [InlineData(11)]
     public void Create_InvalidX_ShouldExplode(int x)
     {
-        var act = () => Location.Create(x, 1);
-        Assert.Throws<ArgumentOutOfRangeException>(act);
+        var loc = Location.Create(x, 1);
+        
+        Assert.True(loc.IsFailure);
+        Assert.NotNull(loc.Error);
     }
     
     [Theory]
@@ -22,7 +24,8 @@ public class LocationTests
     [InlineData(10)]
     public void Create_ValidX_ShouldNotExplode(int x)
     {
-        _ = Location.Create(x, 1);
+        var loc = Location.Create(x, 1);
+        Assert.True(loc.IsSuccess);
     }
     
     [Theory]
@@ -31,8 +34,10 @@ public class LocationTests
     [InlineData(11)]
     public void Create_InvalidY_ShouldExplode(int y)
     {
-        var act = () => Location.Create(1, y);
-        Assert.Throws<ArgumentOutOfRangeException>(act);
+        var loc = Location.Create(1, y);
+        
+        Assert.True(loc.IsFailure);
+        Assert.NotNull(loc.Error);
     }
     
     [Theory]
@@ -41,21 +46,22 @@ public class LocationTests
     [InlineData(10)]
     public void Create_ValidY_ShouldNotExplode(int y)
     {
-        _ = Location.Create(1, y);
+        var loc = Location.Create(1, y);
+        Assert.True(loc.IsSuccess);
     }
     
     [Fact]
     public void Create_ShouldReturnInstance()
     {
         var loc = Location.Create(1, 1);
-        Assert.NotNull(loc);
+        Assert.NotNull(loc.GetValueOrDefault());
     }
     
     [Fact]
     public void CreateRandom_ShouldReturnInstance()
     {
         var loc = Location.CreateRandom();
-        Assert.NotNull(loc);
+        Assert.NotNull(loc.GetValueOrDefault());
     }
     
     [Fact]
@@ -63,9 +69,10 @@ public class LocationTests
     {
         var loc = Location.CreateRandom();
 
-        Func<object> act = () => loc.DistanceTo(null);
+        var distance = loc.Value.DistanceTo(null);
 
-        Assert.Throws<ArgumentNullException>(act);
+        Assert.True(distance.IsFailure);
+        Assert.NotNull(distance.Error);
     }
     
     [Fact]
@@ -74,9 +81,9 @@ public class LocationTests
         var current = Location.Create(2, 6);
         var target = Location.Create(4, 9);
 
-        var distance = current.DistanceTo(target);
+        var distance = current.Value.DistanceTo(target.Value);
         
-        Assert.Equal(5, distance);
+        Assert.Equal(5, distance.Value);
     }
     
     [Fact]
@@ -85,9 +92,9 @@ public class LocationTests
         var current = Location.Create(4, 9);
         var target = Location.Create(2, 6);
 
-        var distance = current.DistanceTo(target);
+        var distance = current.Value.DistanceTo(target.Value);
         
-        Assert.Equal(5, distance);
+        Assert.Equal(5, distance.Value);
     }
 
     [Fact]
@@ -96,7 +103,7 @@ public class LocationTests
         var left = Location.Create(2, 3);
         var right = Location.Create(3, 4);
         
-        Assert.False(left == right);
+        Assert.False(left.Value == right.Value);
     }
     
     [Fact]
@@ -105,13 +112,13 @@ public class LocationTests
         var left = Location.Create(3, 4);
         var right = Location.Create(3, 4);
         
-        Assert.True(left == right);
+        Assert.True(left.Value == right.Value);
     }
 
     [Fact]
     public void ToString_ShouldReturnStringRepresentation()
     {
         var loc = Location.Create(5, 9);
-        Assert.Equal("{x: 5, y: 9}", loc.ToString());
+        Assert.Equal("{x: 5, y: 9}", loc.Value.ToString());
     }
 }
