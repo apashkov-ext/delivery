@@ -1,6 +1,4 @@
-﻿using System;
-using DeliveryApp.Core.Domain.SharedKernel;
-using Xunit;
+﻿using DeliveryApp.Core.Domain.SharedKernel;
 
 namespace DeliveryApp.UnitTests.SharedKernelTests;
 

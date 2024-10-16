@@ -10,5 +10,9 @@
     <ItemGroup>
         <ProjectReference Include="..\Utils\Primitives\Primitives.csproj"/>
     </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="DeliveryApp.UnitTests" />
+    </ItemGroup>
 
 </Project>

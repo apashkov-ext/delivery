@@ -1,13 +1,15 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics;
+using CSharpFunctionalExtensions;
 using Primitives;
 
 namespace DeliveryApp.Core.Domain.Models.CourierAggregate;
 
+[DebuggerDisplay(value: "{GetType()} ({ToString()})")]
 public sealed class Transport : Entity<int>
 {
     public static readonly Transport Pedestrian = new(1, nameof(Pedestrian).ToLowerInvariant(), 1);
-    public static readonly Transport Bicycle = new(1, nameof(Bicycle).ToLowerInvariant(), 2);
-    public static readonly Transport Car = new(1, nameof(Car).ToLowerInvariant(), 3);
+    public static readonly Transport Bicycle = new(2, nameof(Bicycle).ToLowerInvariant(), 2);
+    public static readonly Transport Car = new(3, nameof(Car).ToLowerInvariant(), 3);
     
     public string Name { get; }
     public int Speed { get; }
@@ -38,7 +40,7 @@ public sealed class Transport : Entity<int>
         var t = List().SingleOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
         if (t is null)
         {
-            return Errors.UnknownTransportId();
+            return Errors.UnknownTransportName();
         }
 
         return t;
@@ -59,12 +61,22 @@ public sealed class Transport : Entity<int>
 
         return t;
     }
-    
+
+    public override string ToString()
+    {
+        return $"Id: {Id}, Name: {Name}";
+    }
+
     internal static class Errors
     {
         public static Error UnknownTransportId()
         {
             return new Error("transport.id.is.unknown", "The transport ID is unknown");
+        }      
+        
+        public static Error UnknownTransportName()
+        {
+            return new Error("transport.name.is.unknown", "The transport Name is unknown");
         }
     }
 }
