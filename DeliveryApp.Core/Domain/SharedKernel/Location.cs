@@ -71,12 +71,12 @@ public sealed class Location : ValueObject
     }
 
     public override string ToString() => $"{{x: {X}, y: {Y}}}";
-}
-
-internal static class Errors
-{
-    public static Error LocationCoordinateValueIsInvalid(int from, int to)
+    
+    internal static class Errors
     {
-        return new Error($"{nameof(Location).ToLowerInvariant()}.coordinate.value.is.invalid", $"Coordinate value must be between {from} and {to} including boundaries");
+        public static Error LocationCoordinateValueIsInvalid(int from, int to)
+        {
+            return new Error($"{nameof(Location).ToLowerInvariant()}.coordinate.value.is.invalid", $"Coordinate value must be between {from} and {to} including boundaries");
+        }
     }
 }
