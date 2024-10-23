@@ -14,6 +14,9 @@ public sealed class Location : ValueObject
     
     public int X { get; }
     public int Y { get; }
+
+    public static Location MinLocation => new (MinCoordValue, MinCoordValue);
+    public static Location MaxLocation => new (MaxCoordValue, MaxCoordValue);
     
     private Location() { }
 
