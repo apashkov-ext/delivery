@@ -62,7 +62,7 @@ public sealed class Order : Aggregate
             OrderStatus.Created);
     }
 
-    public Result<VoidResult, Error> Assign(Courier courier)
+    public UnitResult<Error> Assign(Courier courier)
     {
         if (courier is null)
         {
@@ -77,10 +77,10 @@ public sealed class Order : Aggregate
         CourierId = courier.Id;
         Status = OrderStatus.Assigned;
 
-        return VoidResult.Get;
+        return UnitResult.Success<Error>();
     }    
     
-    public Result<VoidResult, Error> Complete()
+    public UnitResult<Error> Complete()
     {
         if (Status != OrderStatus.Assigned)
         {
@@ -90,7 +90,7 @@ public sealed class Order : Aggregate
         CourierId = null;
         Status = OrderStatus.Completed;
         
-        return VoidResult.Get;
+        return UnitResult.Success<Error>();
     }
     
     public class Errors

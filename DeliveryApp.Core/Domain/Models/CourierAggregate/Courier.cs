@@ -53,7 +53,7 @@ public sealed class Courier: Aggregate
             CourierStatus.Free);
     }
 
-    public Result<VoidResult, Error> MakeBusy()
+    public UnitResult<Error> MakeBusy()
     {
         if (Status != CourierStatus.Free)
         {
@@ -62,10 +62,10 @@ public sealed class Courier: Aggregate
 
         Status = CourierStatus.Busy;
         
-        return VoidResult.Get;
+        return UnitResult.Success<Error>();
     }
     
-    public Result<VoidResult, Error> MakeFree()
+    public UnitResult<Error> MakeFree()
     {
         if (Status == CourierStatus.Free)
         {
@@ -74,10 +74,10 @@ public sealed class Courier: Aggregate
         
         Status = CourierStatus.Free;
         
-        return VoidResult.Get;
+        return UnitResult.Success<Error>();
     }
 
-    public Result<VoidResult, Error> Move(Location targetLocation)
+    public UnitResult<Error> Move(Location targetLocation)
     {
         if (targetLocation is null)
         {
@@ -86,7 +86,7 @@ public sealed class Courier: Aggregate
 
         if (Location == targetLocation)
         {
-            return VoidResult.Get;
+            return UnitResult.Success<Error>();
         }
 
         var cells = Transport.Speed;
@@ -106,7 +106,7 @@ public sealed class Courier: Aggregate
             {
                 return Location.Create(Location.X + cells, Location.Y)
                     .Tap(x => Location = x)
-                    .Map(_ => VoidResult.Get);
+                    .Map(_ => UnitResult.Success<Error>());
             }
             
             Location.Create(Location.X + deltaX, Location.Y)
@@ -119,7 +119,7 @@ public sealed class Courier: Aggregate
 
             if (Location == targetLocation)
             {
-                return VoidResult.Get;
+                return UnitResult.Success<Error>();
             }
             
             cells -= deltaX;
@@ -132,7 +132,7 @@ public sealed class Courier: Aggregate
             {
                 return Location.Create(Location.X - cells, Location.Y)
                     .Tap(x => Location = x)
-                    .Map(_ => VoidResult.Get);
+                    .Map(_ => UnitResult.Success<Error>());
             }
             
             Location.Create(Location.X - deltaX, Location.Y)
@@ -145,7 +145,7 @@ public sealed class Courier: Aggregate
             
             if (Location == targetLocation)
             {
-                return VoidResult.Get;
+                return UnitResult.Success<Error>();
             }
             
             cells -= deltaX;
@@ -158,7 +158,7 @@ public sealed class Courier: Aggregate
             {
                 return Location.Create(Location.X, Location.Y + cells)
                     .Tap(x => Location = x)
-                    .Map(_ => VoidResult.Get);
+                    .Map(_ => UnitResult.Success<Error>());
             }
             
             Location.Create(Location.X, Location.Y + deltaY)
@@ -171,7 +171,7 @@ public sealed class Courier: Aggregate
             
             if (Location == targetLocation)
             {
-                return VoidResult.Get;
+                return UnitResult.Success<Error>();
             }
             
             cells -= deltaY;
@@ -184,7 +184,7 @@ public sealed class Courier: Aggregate
             {
                 return Location.Create(Location.X, Location.Y - cells)
                     .Tap(x => Location = x)
-                    .Map(_ => VoidResult.Get);
+                    .Map(_ => UnitResult.Success<Error>());
             }
             
             loc = Location.Create(Location.X, Location.Y - deltaY)
@@ -197,13 +197,13 @@ public sealed class Courier: Aggregate
             
             if (Location == targetLocation)
             {
-                return VoidResult.Get;
+                return UnitResult.Success<Error>();
             }
             
             cells -= deltaY;
         }
         
-        return VoidResult.Get;
+        return UnitResult.Success<Error>();
     }
 
     public Result<double, Error> StepsToLocation(Location targetLocation)
