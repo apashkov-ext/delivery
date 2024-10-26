@@ -69,6 +69,8 @@ public sealed class CourierStatus : Entity<int>
         return state;
     }
 
+    public override string ToString() => Name;
+
     /// <summary>
     ///     Ошибки, которые может возвращать сущность
     /// </summary>

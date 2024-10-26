@@ -43,24 +43,6 @@ public sealed class Order : Aggregate
             targetLocation, 
             OrderStatus.Created);
     }
-    
-    public static Result<Order, Error> Create(Guid basketId, 
-        Result<Location> targetLocation)
-    {
-        if (basketId == Guid.Empty)
-        {
-            return GeneralErrors.ValueIsInvalid(nameof(basketId));
-        }
-
-        if (targetLocation.Value is null)
-        {
-            return GeneralErrors.ValueIsRequired(nameof(targetLocation));
-        }
-        
-        return new Order(basketId, 
-            targetLocation.Value, 
-            OrderStatus.Created);
-    }
 
     public UnitResult<Error> Assign(Courier courier)
     {
