@@ -155,7 +155,7 @@ public class DispatchServiceTests
     }
     
     /*
-        The fastest courier are A and B.
+        Fastest couriers are A and B.
         o o o o o A o o o o
         o o o o o o o o o o
         o B o o o x o o o o
