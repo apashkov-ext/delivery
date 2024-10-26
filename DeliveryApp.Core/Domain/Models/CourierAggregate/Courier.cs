@@ -1,9 +1,11 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Diagnostics;
+using CSharpFunctionalExtensions;
 using DeliveryApp.Core.Domain.SharedKernel;
 using Primitives;
 
 namespace DeliveryApp.Core.Domain.Models.CourierAggregate;
 
+[DebuggerDisplay(value: "{GetType()} {ToString()}")]
 public sealed class Courier: Aggregate
 {
     public string Name { get; }
@@ -221,7 +223,9 @@ public sealed class Courier: Aggregate
 
         return (double) dist.Value / Transport.Speed;
     }
-    
+
+    public override string ToString() => $"Name: {Name}, Transport: {Transport}, Status: {Status}";
+
     public static class Errors
     {
         public static Error CourierAlreadyBusy()
