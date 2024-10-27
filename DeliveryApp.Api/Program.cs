@@ -1,4 +1,3 @@
-using DeliveryApp.Api;
 using DeliveryApp.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,17 +12,6 @@ builder.Services.AddCors(options =>
             policy.AllowAnyOrigin();
         });
 });
-
-// Configuration
-// services.Configure<Settings>(options => Configuration.Bind(options));
-// var connectionString = Configuration["CONNECTION_STRING"];
-// var geoServiceGrpcHost = Configuration["GEO_SERVICE_GRPC_HOST"];
-// var messageBrokerHost = Configuration["MESSAGE_BROKER_HOST"];
-
-builder.Services.AddOptions<Settings>()
-    .BindConfiguration(string.Empty)
-    .ValidateDataAnnotations();
-
 
 builder.RegisterServices();
 

@@ -2,5 +2,5 @@
 
 public interface IUnitOfWork
 {
-    Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default);
+    Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
