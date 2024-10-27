@@ -1,4 +1,5 @@
 using DeliveryApp.Api;
+using DeliveryApp.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddOptions<Settings>()
     .BindConfiguration(string.Empty)
     .ValidateDataAnnotations();
 
+
+builder.RegisterServices();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
 ﻿using DeliveryApp.Core.Extensions;
+using DeliveryApp.Infrastructure.Extensions;
 
 namespace DeliveryApp.Api.Extensions;
 
@@ -9,6 +10,7 @@ internal static class RegisterServicesExtension
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.RegisterDomainServices();
+        builder.Services.RegisterInfrastructureServices();
         
         return builder;
     }
