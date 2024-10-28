@@ -5,6 +5,7 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>12</LangVersion>
+        <UserSecretsId>e76d10ce-fc0d-48fa-ad8d-3013759fadcf</UserSecretsId>
     </PropertyGroup>
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>

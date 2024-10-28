@@ -7,13 +7,13 @@ namespace DeliveryApp.Core.Ports;
 
 public interface IOrderRepository : IRepository<Order>
 {
-    Task AddAsync(Order order, CancellationToken ct = default);
+    Task<UnitResult<Error>> AddAsync(Order order, CancellationToken ct = default);
     
-    Task UpdateAsync(Order order, CancellationToken ct = default);
+    Task<UnitResult<Error>> UpdateAsync(Order order, CancellationToken ct = default);
     
-    Task<Maybe<Order>> FindByIdAsync(Guid orderId, CancellationToken ct = default);
+    Task<Result<Maybe<Order>, Error>> FindByIdAsync(Guid orderId, CancellationToken ct = default);
     
-    Task<ReadOnlyCollection<Order>> FindCreated(CancellationToken ct = default);
+    Task<ReadOnlyCollection<Order>> FindCreatedAsync(CancellationToken ct = default);
     
-    Task<ReadOnlyCollection<Order>> FindAssigned(CancellationToken ct = default);
+    Task<ReadOnlyCollection<Order>> FindAssignedAsync(CancellationToken ct = default);
 }

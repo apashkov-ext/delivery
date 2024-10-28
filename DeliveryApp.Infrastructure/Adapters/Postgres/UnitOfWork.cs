@@ -19,10 +19,9 @@ internal class UnitOfWork : IUnitOfWork, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return true;
+        return _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private void Dispose(bool disposing)
