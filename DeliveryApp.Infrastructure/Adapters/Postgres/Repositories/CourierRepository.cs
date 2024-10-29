@@ -18,11 +18,8 @@ internal class CourierRepository : ICourierRepository
     
     public async Task<UnitResult<Error>> AddAsync(Courier courier, CancellationToken ct = default)
     {
-        if (courier is null)
-        {
-            return GeneralErrors.ValueIsRequired(nameof(courier));
-        }
-
+        ArgumentNullException.ThrowIfNull(courier);
+        
         _db.Attach(courier.Status);
         _db.Attach(courier.Transport);
         await _db.Couriers.AddAsync(courier, ct);
@@ -32,11 +29,8 @@ internal class CourierRepository : ICourierRepository
 
     public Task<UnitResult<Error>> UpdateAsync(Courier courier, CancellationToken ct = default)
     {
-        if (courier is null)
-        {
-            return Task.FromResult<UnitResult<Error>>(GeneralErrors.ValueIsRequired(nameof(courier)));
-        }
-        
+        ArgumentNullException.ThrowIfNull(courier);
+
         _db.Attach(courier.Status);
         _db.Attach(courier.Transport);
         _db.Couriers.Update(courier);
@@ -44,20 +38,14 @@ internal class CourierRepository : ICourierRepository
         return Task.FromResult(UnitResult.Success<Error>());
     }
 
-    public Task<Result<Maybe<Courier>, Error>> FindByIdAsync(Guid courierId, CancellationToken ct = default)
+    public async Task<Maybe<Courier>> FindByIdAsync(Guid courierId, CancellationToken ct = default)
     {
-        if (courierId == Guid.Empty)
-        {
-            return Task.FromResult<Result<Maybe<Courier>, Error>>(GeneralErrors.ValueIsInvalid(nameof(courierId)));
-        }
-
-        var task = _db.Couriers
+        var courier = await _db.Couriers
             .Include(x => x.Status)
             .Include(x => x.Transport)
-            .FirstOrDefaultAsync(x => x.Id == courierId, ct)
-            .AsMaybe();
+            .FirstOrDefaultAsync(x => x.Id == courierId, ct);
         
-        return Result.Of<Maybe<Courier>, Error>(() => task);
+        return courier;
     }
 
     public async Task<ReadOnlyCollection<Courier>> FindFreeAsync(CancellationToken ct = default)
