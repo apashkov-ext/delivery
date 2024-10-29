@@ -112,16 +112,4 @@ public class OrderTests
         
         Assert.Equal(OrderStatus.Completed, order.Value.Status);
     }
-    
-    [Fact]
-    public void Complete_ShouldSetCourierIdToNull()
-    {
-        var courier = Courier.Create("Courier", Transport.Car, Location.CreateRandom().Value);
-        var order = Order.Create(Guid.NewGuid(), Location.CreateRandom().Value);
-        _ = order.Value.Assign(courier.Value);
-        
-        _ = order.Value.Complete();
-        
-        Assert.Null(order.Value.CourierId);
-    }
 }

@@ -1,4 +1,6 @@
 ﻿using DeliveryApp.Core.Extensions;
+using DeliveryApp.Infrastructure.Adapters.Postgres;
+using DeliveryApp.Infrastructure.Extensions;
 
 namespace DeliveryApp.Api.Extensions;
 
@@ -9,6 +11,11 @@ internal static class RegisterServicesExtension
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.RegisterDomainServices();
+        builder.Services.RegisterInfrastructureServices();
+        
+        builder.Services.AddOptions<DatabaseConfiguration>()
+            .BindConfiguration(string.Empty)
+            .ValidateDataAnnotations();
         
         return builder;
     }

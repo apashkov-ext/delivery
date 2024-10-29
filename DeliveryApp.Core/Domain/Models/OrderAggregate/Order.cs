@@ -69,7 +69,6 @@ public sealed class Order : Aggregate
             return Errors.ImpossibleToComplete();
         }
 
-        CourierId = null;
         Status = OrderStatus.Completed;
         
         return UnitResult.Success<Error>();
