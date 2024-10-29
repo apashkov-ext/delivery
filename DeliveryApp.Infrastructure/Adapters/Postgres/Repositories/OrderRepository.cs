@@ -18,11 +18,8 @@ internal class OrderRepository : IOrderRepository
     
     public async Task<UnitResult<Error>> AddAsync(Order order, CancellationToken ct = default)
     {
-        if (order is null)
-        {
-            return GeneralErrors.ValueIsRequired(nameof(order));
-        }
-
+        ArgumentNullException.ThrowIfNull(order);
+        
         _db.Attach(order.Status);
         await _db.Orders.AddAsync(order, ct);
         
@@ -31,10 +28,7 @@ internal class OrderRepository : IOrderRepository
 
     public Task<UnitResult<Error>> UpdateAsync(Order order, CancellationToken ct = default)
     {
-        if (order is null)
-        {
-            return Task.FromResult<UnitResult<Error>>(GeneralErrors.ValueIsRequired(nameof(order)));
-        }
+        ArgumentNullException.ThrowIfNull(order);
         
         _db.Attach(order.Status);
         _db.Orders.Update(order);
@@ -42,19 +36,13 @@ internal class OrderRepository : IOrderRepository
         return Task.FromResult(UnitResult.Success<Error>());
     }
 
-    public Task<Result<Maybe<Order>, Error>> FindByIdAsync(Guid orderId, CancellationToken ct = default)
+    public async Task<Maybe<Order>> FindByIdAsync(Guid orderId, CancellationToken ct = default)
     {
-        if (orderId == Guid.Empty)
-        {
-            return Task.FromResult<Result<Maybe<Order>, Error>>(GeneralErrors.ValueIsInvalid(nameof(orderId)));
-        }
-
-        var task = _db.Orders
+        var order = await _db.Orders
             .Include(x => x.Status)
-            .FirstOrDefaultAsync(x => x.Id == orderId, ct)
-            .AsMaybe();
+            .FirstOrDefaultAsync(x => x.Id == orderId, ct);
         
-        return Result.Of<Maybe<Order>, Error>(() => task);
+        return order;
     }
 
     public async Task<ReadOnlyCollection<Order>> FindCreatedAsync(CancellationToken ct = default)

@@ -11,7 +11,7 @@ public interface IOrderRepository : IRepository<Order>
     
     Task<UnitResult<Error>> UpdateAsync(Order order, CancellationToken ct = default);
     
-    Task<Result<Maybe<Order>, Error>> FindByIdAsync(Guid orderId, CancellationToken ct = default);
+    Task<Maybe<Order>> FindByIdAsync(Guid orderId, CancellationToken ct = default);
     
     Task<ReadOnlyCollection<Order>> FindCreatedAsync(CancellationToken ct = default);
     

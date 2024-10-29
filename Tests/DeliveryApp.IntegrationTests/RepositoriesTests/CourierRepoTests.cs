@@ -45,15 +45,6 @@ public class CourierRepoTests : IAsyncLifetime
     }
     
     [Fact]
-    public async Task Add_NullCourier_ShouldFail()
-    {
-        var repo = new CourierRepository(_db);
-        var add = await repo.AddAsync(null as Courier);
-        
-        Assert.True(add.IsFailure);
-    }    
-    
-    [Fact]
     public async Task Add_ShouldInsert()
     {
         var courier = Courier.Create("Name", Transport.Car, Location.MinLocation).Value;
@@ -66,17 +57,8 @@ public class CourierRepoTests : IAsyncLifetime
         Assert.True(add.IsSuccess);
         
         var freshCourier = await repo.FindByIdAsync(courier.Id);
-        Assert.True(freshCourier.Value.HasValue);
-        Assert.Equivalent(courier, freshCourier.Value.Value);
-    }    
-    
-    [Fact]
-    public async Task Update_NullCourier_ShouldFail()
-    {
-        var repo = new CourierRepository(_db);
-        var update = await repo.UpdateAsync(null as Courier);
-        
-        Assert.True(update.IsFailure);    
+        Assert.True(freshCourier.HasValue);
+        Assert.Equivalent(courier, freshCourier.Value);
     }    
     
     [Fact]
@@ -94,8 +76,8 @@ public class CourierRepoTests : IAsyncLifetime
         
         Assert.True(update.IsSuccess);
         var freshCourier = await repo.FindByIdAsync(courier.Id);
-        Assert.True(freshCourier.Value.HasValue);
-        Assert.Equivalent(courier, freshCourier.Value.Value);
+        Assert.True(freshCourier.HasValue);
+        Assert.Equivalent(courier, freshCourier.Value);
     }    
     
     [Fact]
@@ -104,8 +86,7 @@ public class CourierRepoTests : IAsyncLifetime
         var repo = new CourierRepository(_db);
         var courier = await repo.FindByIdAsync(Guid.NewGuid());
         
-        Assert.True(courier.IsSuccess);
-        Assert.True(courier.Value.HasNoValue);
+        Assert.True(courier.HasNoValue);
     }    
     
     [Fact]
@@ -120,9 +101,8 @@ public class CourierRepoTests : IAsyncLifetime
         
         var find = await repo.FindByIdAsync(courier.Id);
         
-        Assert.True(find.IsSuccess);
-        Assert.True(find.Value.HasValue);
-        Assert.Equivalent(courier, find.Value.Value);
+        Assert.True(find.HasValue);
+        Assert.Equivalent(courier, find.Value);
     }    
     
     [Fact]

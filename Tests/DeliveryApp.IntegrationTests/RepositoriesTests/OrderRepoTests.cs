@@ -44,15 +44,6 @@ public class OrderRepoTests : IAsyncLifetime
     {
         return _postgreSqlContainer.DisposeAsync().AsTask();
     }
-
-    [Fact]
-    public async Task Add_NullOrder_ShouldFail()
-    {
-        var repo = new OrderRepository(_db);
-        var add = await repo.AddAsync(null as Order);
-        
-        Assert.True(add.IsFailure);
-    }    
     
     [Fact]
     public async Task Add_ShouldInsert()
@@ -67,17 +58,8 @@ public class OrderRepoTests : IAsyncLifetime
         Assert.True(add.IsSuccess);
         
         var freshOrder = await repo.FindByIdAsync(order.Id);
-        Assert.True(freshOrder.Value.HasValue);
-        Assert.Equivalent(order, freshOrder.Value.Value);
-    }    
-    
-    [Fact]
-    public async Task Update_NullOrder_ShouldFail()
-    {
-        var repo = new OrderRepository(_db);
-        var update = await repo.UpdateAsync(null as Order);
-        
-        Assert.True(update.IsFailure);    
+        Assert.True(freshOrder.HasValue);
+        Assert.Equivalent(order, freshOrder.Value);
     }    
     
     [Fact]
@@ -96,8 +78,8 @@ public class OrderRepoTests : IAsyncLifetime
         
         Assert.True(update.IsSuccess);
         var freshOrder = await repo.FindByIdAsync(order.Id);
-        Assert.True(freshOrder.Value.HasValue);
-        Assert.Equivalent(order, freshOrder.Value.Value);
+        Assert.True(freshOrder.HasValue);
+        Assert.Equivalent(order, freshOrder.Value);
     }    
     
     [Fact]
@@ -106,8 +88,7 @@ public class OrderRepoTests : IAsyncLifetime
         var repo = new OrderRepository(_db);
         var order = await repo.FindByIdAsync(Guid.NewGuid());
         
-        Assert.True(order.IsSuccess);
-        Assert.True(order.Value.HasNoValue);
+        Assert.True(order.HasNoValue);
     }    
     
     [Fact]
@@ -122,9 +103,8 @@ public class OrderRepoTests : IAsyncLifetime
         
         var find = await repo.FindByIdAsync(order.Id);
         
-        Assert.True(find.IsSuccess);
-        Assert.True(find.Value.HasValue);
-        Assert.Equivalent(order, find.Value.Value);
+        Assert.True(find.HasValue);
+        Assert.Equivalent(order, find.Value);
     }    
     
     [Fact]
