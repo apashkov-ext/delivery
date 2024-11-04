@@ -21,6 +21,7 @@ public class MoveCouriersCommandTests
         var order = Order.Create(Guid.NewGuid(), loc).Value;
         var courier = Courier.Create("Name", Transport.Car, loc).Value;
         order.Assign(courier);
+        courier.MakeBusy();
         
         var mocker = new AutoMocker();
         mocker.GetMock<IOrderRepository>()
@@ -32,14 +33,13 @@ public class MoveCouriersCommandTests
         var handler = mocker.CreateInstance<MoveCouriersCommandHandler>();
 
         var req = new MoveCouriersCommand();
-        var result = await handler.Handle(req);
+        await handler.Handle(req);
         
-        Assert.True(result.IsSuccess);
         Assert.Equal(OrderStatus.Completed, order.Status);
         Assert.Equal(CourierStatus.Free, courier.Status);
         
         mocker.GetMock<ICourierRepository>()
-            .Verify(x => x.UpdateAsync(It.IsAny<Courier>(), It.IsAny<CancellationToken>()), Times.Once);        
+            .Verify(x => x.UpdateAsync(It.Is<Courier>(c => c.Status == CourierStatus.Free), It.IsAny<CancellationToken>()), Times.Once);        
         mocker.GetMock<IOrderRepository>()
             .Verify(x => x.UpdateAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -52,6 +52,7 @@ public class MoveCouriersCommandTests
         var courierLoc = Location.Create(4, 5).Value;
         var courier = Courier.Create("Name", Transport.Car, courierLoc).Value;
         order.Assign(courier);
+        courier.MakeBusy();
         
         var mocker = new AutoMocker();
         mocker.GetMock<IOrderRepository>()
@@ -63,26 +64,27 @@ public class MoveCouriersCommandTests
         var handler = mocker.CreateInstance<MoveCouriersCommandHandler>();
 
         var req = new MoveCouriersCommand();
-        _ = await handler.Handle(req);
+        await handler.Handle(req);
         
         Assert.Equal(OrderStatus.Completed, order.Status);
         Assert.Equal(CourierStatus.Free, courier.Status);
         Assert.Equal(order.TargetLocation, courier.Location);
         
         mocker.GetMock<ICourierRepository>()
-            .Verify(x => x.UpdateAsync(It.IsAny<Courier>(), It.IsAny<CancellationToken>()), Times.Once);        
+            .Verify(x => x.UpdateAsync(It.Is<Courier>(c => c.Status == CourierStatus.Free), It.IsAny<CancellationToken>()), Times.Once);        
         mocker.GetMock<IOrderRepository>()
             .Verify(x => x.UpdateAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Once);
     }    
     
     [Fact]
-    public async Task ShouldInvokeCourierRepo()
+    public async Task ShouldInvokeRepo()
     {
         var orderLoc = Location.Create(5, 5).Value;
         var order = Order.Create(Guid.NewGuid(), orderLoc).Value;
         var courierLoc = Location.Create(1, 1).Value;
         var courier = Courier.Create("Name", Transport.Pedestrian, courierLoc).Value;
         order.Assign(courier);
+        courier.MakeBusy();
         
         var mocker = new AutoMocker();
         mocker.GetMock<IOrderRepository>()
@@ -94,11 +96,11 @@ public class MoveCouriersCommandTests
         var handler = mocker.CreateInstance<MoveCouriersCommandHandler>();
 
         var req = new MoveCouriersCommand();
-        _ = await handler.Handle(req);
+        await handler.Handle(req);
         
         mocker.GetMock<ICourierRepository>()
-            .Verify(x => x.UpdateAsync(It.IsAny<Courier>(), It.IsAny<CancellationToken>()), Times.Once);        
+            .Verify(x => x.UpdateAsync(It.Is<Courier>(c => c.Status == CourierStatus.Busy), It.IsAny<CancellationToken>()), Times.Once);        
         mocker.GetMock<IOrderRepository>()
-            .Verify(x => x.UpdateAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Never);
+            .Verify(x => x.UpdateAsync(It.Is<Order>(o => o.Status == OrderStatus.Completed), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

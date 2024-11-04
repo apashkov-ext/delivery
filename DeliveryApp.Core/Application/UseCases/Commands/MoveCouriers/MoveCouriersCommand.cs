@@ -1,33 +1,38 @@
-﻿using CSharpFunctionalExtensions;
+﻿using DeliveryApp.Core.Domain.Models.CourierAggregate;
+using DeliveryApp.Core.Domain.Models.OrderAggregate;
 using DeliveryApp.Core.Ports;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Primitives;
 
 namespace DeliveryApp.Core.Application.UseCases.Commands.MoveCouriers;
 
-public class MoveCouriersCommand : IRequest<UnitResult<Error>>;
+public class MoveCouriersCommand : IRequest;
 
-internal sealed class MoveCouriersCommandHandler : IRequestHandler<MoveCouriersCommand, UnitResult<Error>>
+internal sealed class MoveCouriersCommandHandler : IRequestHandler<MoveCouriersCommand>
 {
     private readonly IUnitOfWork _uow;
     private readonly ICourierRepository _couriers;
     private readonly IOrderRepository _orders;
+    private readonly ILogger<MoveCouriersCommandHandler> _logger;
 
     public MoveCouriersCommandHandler(IUnitOfWork uow,
         ICourierRepository couriers,
-        IOrderRepository orders)
+        IOrderRepository orders,
+        ILogger<MoveCouriersCommandHandler> logger)
     {
         _uow = uow;
         _couriers = couriers;
         _orders = orders;
+        _logger = logger;
     }
     
-    public async Task<UnitResult<Error>> Handle(MoveCouriersCommand request, CancellationToken ct = default)
+    public async Task Handle(MoveCouriersCommand request, CancellationToken ct = default)
     {
         var busyCouriers = await _couriers.FindBusyAsync(ct);
         if (busyCouriers.Count == 0)
         {
-            return UnitResult.Success<Error>();
+            return;
         }
 
         var orders = await _orders.FindAssignedAsync(ct);
@@ -42,24 +47,14 @@ internal sealed class MoveCouriersCommandHandler : IRequestHandler<MoveCouriersC
             // already on recipient position.
             if (courier.Location == order.TargetLocation)
             {
-                order.Complete();
-                courier.MakeFree();
-
-                await _orders.UpdateAsync(order);
-                await _couriers.UpdateAsync(courier);
-                
+                await CompleteOrder(order, courier);
                 continue;
             }
 
             courier.Move(order.TargetLocation);
             if (courier.Location == order.TargetLocation)
             {
-                order.Complete();
-                courier.MakeFree();
-                
-                await _orders.UpdateAsync(order);
-                await _couriers.UpdateAsync(courier);
-                
+                await CompleteOrder(order, courier);
                 continue;
             }
             
@@ -67,7 +62,32 @@ internal sealed class MoveCouriersCommandHandler : IRequestHandler<MoveCouriersC
         }
 
         await _uow.SaveChangesAsync(ct);
+    }
+
+    private async Task CompleteOrder(Order order, Courier courier)
+    {
+        using var loggerScope = _logger.BeginScope(new Dictionary<string, object>
+        {
+            { "OrderId", order.Id },
+            { "CourierId", courier.Id }
+        });
         
-        return UnitResult.Success<Error>();
+        var complete = order.Complete();
+        if (complete.IsFailure)
+        { 
+            _logger.LogWarning("Failed to complete order: {Error}", complete.Error);
+            return;
+        }
+        
+        var free = courier.MakeFree();
+        if (free.IsFailure)
+        { 
+            _logger.LogWarning("Failed to complete order: {Error}", free.Error);
+            return;
+        }
+
+        await _orders.UpdateAsync(order);
+        await _couriers.UpdateAsync(courier);
+        await _uow.SaveChangesAsync();
     }
 }
