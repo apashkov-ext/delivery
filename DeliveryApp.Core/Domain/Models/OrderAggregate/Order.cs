@@ -73,7 +73,7 @@ public sealed class Order : Aggregate
         
         return UnitResult.Success<Error>();
     }
-    
+
     public class Errors
     {
         public static Error OrderAlreadyAssigned()

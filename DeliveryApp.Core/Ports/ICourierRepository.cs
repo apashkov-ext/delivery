@@ -14,4 +14,6 @@ public interface ICourierRepository : IRepository<Courier>
     Task<Maybe<Courier>> FindByIdAsync(Guid courierId, CancellationToken ct = default);
     
     Task<ReadOnlyCollection<Courier>> FindFreeAsync(CancellationToken ct = default);
+    
+    Task<ReadOnlyCollection<Courier>> FindBusyAsync(CancellationToken ct = default);
 }

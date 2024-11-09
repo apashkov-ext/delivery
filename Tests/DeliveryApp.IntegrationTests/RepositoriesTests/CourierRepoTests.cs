@@ -110,9 +110,9 @@ public class CourierRepoTests : IAsyncLifetime
     {
         var repo = new CourierRepository(_db);
 
-        var created = await repo.FindFreeAsync();
+        var free = await repo.FindFreeAsync();
         
-        Assert.Empty(created);
+        Assert.Empty(free);
     }    
     
     [Fact]
@@ -136,4 +136,36 @@ public class CourierRepoTests : IAsyncLifetime
         Assert.Contains(courier1, free);
         Assert.Contains(courier2, free);
     }    
+    
+    [Fact]
+    public async Task FindBusy_ShouldReturnEmpty()
+    {
+        var repo = new CourierRepository(_db);
+
+        var busy = await repo.FindBusyAsync();
+        
+        Assert.Empty(busy);
+    }    
+    
+    [Fact]
+    public async Task FindBusy_ShouldReturnBusy()
+    {
+        var courier1 = Courier.Create("Name1", Transport.Car, Location.MinLocation).Value;
+        var courier2 = Courier.Create("Name2", Transport.Car, Location.MinLocation).Value;
+        var courier3 = Courier.Create("Name3", Transport.Car, Location.MinLocation).Value;
+        courier3.MakeBusy();
+        
+        var repo = new CourierRepository(_db);
+        _ = await repo.AddAsync(courier1);
+        _ = await repo.AddAsync(courier2);
+        _ = await repo.AddAsync(courier3);
+        var uow = new UnitOfWork(_db);
+        await uow.SaveChangesAsync();
+
+        var busy = await repo.FindBusyAsync();
+        
+        Assert.Single(busy);
+        Assert.DoesNotContain(courier1, busy);
+        Assert.DoesNotContain(courier2, busy);
+    } 
 }

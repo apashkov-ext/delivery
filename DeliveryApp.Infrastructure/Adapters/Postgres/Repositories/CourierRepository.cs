@@ -58,4 +58,15 @@ internal class CourierRepository : ICourierRepository
 
         return couriers.AsReadOnly();
     }
+
+    public async Task<ReadOnlyCollection<Courier>> FindBusyAsync(CancellationToken ct = default)
+    {
+        var couriers = await _db.Couriers
+            .Include(x => x.Status)
+            .Include(x => x.Transport)
+            .Where(x => x.Status == CourierStatus.Busy)
+            .ToListAsync(ct);
+
+        return couriers.AsReadOnly();
+    }
 }
