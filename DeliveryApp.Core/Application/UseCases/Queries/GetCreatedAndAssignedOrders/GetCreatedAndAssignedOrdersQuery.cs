@@ -10,8 +10,7 @@ public sealed class GetCreatedAndAssignedOrdersQuery : IRequest<GetCreatedAndAss
 internal sealed class GetCreatedAndAssignedOrdersQueryHandler
     : IRequestHandler<GetCreatedAndAssignedOrdersQuery, GetCreatedAndAssignedOrdersResponse>
 {
-    private const string SqlQuery =
-        "SELECT id, courier_id, location_x, location_y, status_id FROM public.orders where status_id!=@status_id;";
+    private const string SqlQuery = "SELECT id as Id, location_x as X, location_y as Y FROM public.orders where status_id!=@status_id;";
     
     private readonly PostgresConnectionString _connectionString;
 
@@ -25,7 +24,7 @@ internal sealed class GetCreatedAndAssignedOrdersQueryHandler
         await using var conn = new NpgsqlConnection(_connectionString);
         await conn.OpenAsync(ct);
         
-        var result = await conn.QueryAsync<dynamic>(SqlQuery, new { status_id = OrderStatus.Completed.Id });
+        var result = await conn.QueryAsync<OrderProjection>(SqlQuery, new { status_id = OrderStatus.Completed.Id });
         var list = result.AsList();
         if (list.Count == 0)
         {
@@ -35,9 +34,9 @@ internal sealed class GetCreatedAndAssignedOrdersQueryHandler
         var orders = list.Select(Map);
         return new GetCreatedAndAssignedOrdersResponse(orders);
     }
-    private static Order Map(dynamic result)
+    private static Order Map(OrderProjection result)
     {
-        var location = new Location(result.location_x, result.location_y);
-        return new Order(result.id, location);
+        var location = new Location(result.X, result.Y);
+        return new Order(result.Id, location);
     }
 }
