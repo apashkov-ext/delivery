@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DeliveryApp.Core.Domain.Models.CourierAggregate;
 using MediatR;
 using Npgsql;
 
@@ -8,7 +9,7 @@ public sealed class GetBusyCouriersQuery : IRequest<GetBusyCouriersResponse>;
 
 internal sealed class GetBusyCouriersQueryHandler : IRequestHandler<GetBusyCouriersQuery, GetBusyCouriersResponse>
 {
-    private const string SqlQuery = "SELECT id as Id, name as Name, location_x as X, location_y as Y, transport_id as TransportId FROM public.couriers";
+    private const string SqlQuery = "SELECT id as Id, name as Name, location_x as X, location_y as Y, transport_id as TransportId FROM public.couriers WHERE status_id=@status_id";
     
     private readonly PostgresConnectionString _connectionString;
 
@@ -22,7 +23,7 @@ internal sealed class GetBusyCouriersQueryHandler : IRequestHandler<GetBusyCouri
         await using var conn = new NpgsqlConnection(_connectionString);
         await conn.OpenAsync(ct);
         
-        var result = await conn.QueryAsync<CourierProjection>(SqlQuery, new { });
+        var result = await conn.QueryAsync<CourierProjection>(SqlQuery, new { status_id = CourierStatus.Busy.Id });
         var list = result.AsList();
         if (list.Count == 0)
         {

@@ -10,7 +10,7 @@ public sealed class GetCreatedAndAssignedOrdersQuery : IRequest<GetCreatedAndAss
 internal sealed class GetCreatedAndAssignedOrdersQueryHandler
     : IRequestHandler<GetCreatedAndAssignedOrdersQuery, GetCreatedAndAssignedOrdersResponse>
 {
-    private const string SqlQuery = "SELECT id as Id, location_x as X, location_y as Y FROM public.orders where status_id!=@status_id;";
+    private const string SqlQuery = "SELECT id as Id, target_location_x as X, target_location_y as Y FROM public.orders where status_id!=@status_id;";
     
     private readonly PostgresConnectionString _connectionString;
 
