@@ -1,5 +1,6 @@
 ﻿using DeliveryApp.Core.Application.UseCases.Queries;
 using DeliveryApp.Core.Extensions;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Extensions;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,10 @@ internal static class RegisterServicesExtension
         builder.Services.RegisterInfrastructureServices();
         
         builder.Services.AddOptions<DatabaseConfiguration>()
+            .BindConfiguration(string.Empty)
+            .ValidateDataAnnotations();        
+        
+        builder.Services.AddOptions<GeoServiceConfiguration>()
             .BindConfiguration(string.Empty)
             .ValidateDataAnnotations();
 
