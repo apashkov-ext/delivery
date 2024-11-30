@@ -1,4 +1,5 @@
 ﻿using DeliveryApp.Core.Ports;
+using DeliveryApp.Infrastructure.Adapters.Grpc.GeoService;
 using DeliveryApp.Infrastructure.Adapters.Postgres;
 using DeliveryApp.Infrastructure.Adapters.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using Primitives;
 
 namespace DeliveryApp.Infrastructure.Extensions;
 
-public static class RegisterInfrastructureServicesExtension
+public static class ServiceCollectionExtensions
 {
     public static void RegisterInfrastructureServices(this IServiceCollection services)
     {
@@ -16,6 +17,7 @@ public static class RegisterInfrastructureServicesExtension
         
         services.RegisterRepositories();
         services.RegisterDbContext();
+        services.AddTransient<IGeoClient, Client>();
     }
     
     private static void RegisterRepositories(this IServiceCollection services)
